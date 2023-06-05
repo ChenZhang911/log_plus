@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title id="pageTitle">WebSocket Demo</title>
+    <style>
+        #messageContainer {
+            border: 1px solid #ccc; /* 添加边框样式 */
+            max-height: 600px; /* 设置最大高度 */
+            overflow-y: scroll; /* 添加垂直滚动条 */
+        }
+
+        .info {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<h1 id="pageHeading">当前无监听任务</h1>
+<h1 id="filterH1">当前无过滤条件</h1>
+<div id="messageContainer"></div>
+
+<form id="messageForm">
+    <input type="text" id="textInput" placeholder="Enter your message">
+    <button type="submit">Send</button>
+</form>
+
+<div>
+    <label>过滤:</label>
+    <input type="text" id="filterInput" placeholder="请输入要过滤的关键字">
+    <button type="button" onclick="filterMessages()">过滤</button>
+</div>
+
+<script th:inline="javascript">
+    var messageContainer = document.getElementById('messageContainer');
+    var messageForm = document.getElementById('messageForm');
+    var textInput = document.getElementById('textInput');
+    var filterInput = document.getElementById('filterInput');
+    var websocket;
+    var filterKeyword = '';
+    var pageTitle = document.getElementById('pageTitle');
+    var pageHeading = document.getElementById('pageHeading');
+    var filterH1 = document.getElementById('filterH1');
+
+    // 连接 WebSocket
+    function connectWebSocket() {
+        websocket = new WebSocket('ws://' + window.location.host + '/webSocket');
+
+        websocket.onopen = function () {
+            console.log('WebSocket connected');
+        };
+
+        websocket.onclose = function () {
+            console.log('WebSocket connection closed');
+            setTimeout(connectWebSocket, 3000); // 3秒后尝试重新连接
+        };
+
+        websocket.onmessage = function (event) {
+            var message = event.data;
+
+            var jsonObj = JSON.parse(message);
+
+            var message1 = jsonObj.message;
+
+            var loggerTime = jsonObj.loggerTime;
+
+            var loggerName = jsonObj.loggerName;
+
+            var threadName = jsonObj.threadName;
+
+            var fullMessage = loggerTime + " " +threadName+ " " + loggerName+ " " + message1
+
+
+            // 创建新的消息元素
+            var messageElement = document.createElement('div');
+            messageElement.innerText = fullMessage;
+            messageElement.className = 'message'; // 添加 message 类名
+
+            // 设置类名
+            if (message.includes('INFO')) {
+                messageElement.classList.add('info');
+            } else if (message.includes('ERROR')) {
+                messageElement.classList.add('error');
+            }
+
+            // 过滤消息
+            if (filterKeyword && !fullMessage.includes(filterKeyword)) {
+                messageElement.style.display = 'none';
+            }
+            // 添加到消息容器
+            messageContainer.appendChild(messageElement);
+
+            // 滚动到底部
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        };
+    }
+
+    // 监听表单提交事件
+    messageForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        var message = textInput.value;
+
+        // 发送消息到后台
+        websocket.send(message);
+
+        // 清空输入框
+        textInput.value = '';
+
+      pageTitle.innerText = message;
+      pageHeading.innerText = "当前监听日志 ：" + message;
+    });
+
+    // 筛选消息
+    function filterMessages() {
+        filterKeyword = filterInput.value;
+        filterH1.innerText = "当前过滤为：" + filterKeyword
+        applyFilter();
+    }
+
+    // 应用筛选
+    function applyFilter() {
+        var messages = messageContainer.getElementsByClassName('message');
+        for (var i = 0; i < messages.length; i++) {
+            var message = messages[i];
+            if (filterKeyword && !message.innerText.includes(filterKeyword)) {
+                message.style.display = 'none';
+            } else {
+                message.style.display = 'block';
+            }
+        }
+    }
+
+    // 清空消息
+    function clearMessages() {
+        messageContainer.innerHTML = '';
+    }
+
+    // 初始化连接 WebSocket
+    connectWebSocket();
+</script>
+</body>
+</html>
