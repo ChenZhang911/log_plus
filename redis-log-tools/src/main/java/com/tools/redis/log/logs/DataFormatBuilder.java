@@ -3,10 +3,7 @@ package com.tools.redis.log.logs;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by yuyu on 2018/3/15.
- * 用于日期处理相关函数
- */
+
 public class DataFormatBuilder {
 
     /**

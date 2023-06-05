@@ -4,10 +4,7 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import redis.clients.jedis.Jedis;
 
-/**
- * Created by yuyu on 2018/3/15.
- * 自定义日志处理
- */
+
 public class RedisAppender extends AppenderBase<LoggingEvent> {
 
     @Override

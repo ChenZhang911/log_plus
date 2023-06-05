@@ -3,10 +3,7 @@ package com.tools.redis.log.logs;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import lombok.Data;
 
-/**
- * Created by yuyu on 2018/3/15.
- * 用于保存日志数据
- */
+
 @Data
 public class LogData {
 

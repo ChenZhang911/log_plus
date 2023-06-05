@@ -7,10 +7,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.Properties;
 
-/**
- * Created by yuyu on 2018/3/15.
- * redis相关的操作，获取一个单例的连接池
- */
+
 public class RedisBuilder {
 
     private static JedisPool jedisPool;
