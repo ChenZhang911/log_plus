@@ -37,6 +37,7 @@ public class RedisLogAutoConfig {
                         // 从延时队列中移除已过期的消息
                         jedis.zrem(key, expiredMessage);
                     }
+                    RedisBuilder.closeJedis(jedis);
 //                    休眠1s
                     Thread.sleep(1000l);
                 } catch (InterruptedException e) {
