@@ -45,6 +45,7 @@ public class WebSocketServer {
                 throw new RuntimeException(e);
             }
         });
+        RedisBuilder.closeJedis(jedis);
     }
     //建立连接成功调用
     @OnOpen
